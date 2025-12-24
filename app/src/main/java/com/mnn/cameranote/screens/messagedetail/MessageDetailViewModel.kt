@@ -5,15 +5,41 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mnn.cameranote.data.database.entity.MessageEntity
 import com.mnn.cameranote.data.database.entity.MessageItemEntity
+import com.mnn.cameranote.data.database.entity.MessageType
 import com.mnn.cameranote.data.database.repository.MessageRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-class MessageDetailModel(private val savedStateHandle: SavedStateHandle, private val repository: MessageRepository) :
+class MessageDetailViewModel(
+    private val savedStateHandle: SavedStateHandle,
+    private val repository: MessageRepository
+) :
     ViewModel() {
+    fun sendMessage(inputText: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.insertOneMessage(
+                MessageItemEntity(
+                    messageId = messageId,
+                    content = inputText,
+                    sequence = 1,
+                    type = MessageType.TEXT.ordinal,
+                    createTime = System.currentTimeMillis()
+                )
+            )
+        }
+    }
+
     // 直接从 savedStateHandle 中获取 "id"
     private val messageId: Long = checkNotNull(savedStateHandle["id"])
+
+    fun updateTitle(title: String, id: Long) {
+        viewModelScope.launch {
+            repository.updateMessage(title,id)
+        }
+    }
     val message: StateFlow<MessageEntity> = repository.selectMessageById(messageId).stateIn(
         scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), // 界面不可见 5 秒后停止收集，节省资源
         initialValue = MessageEntity(1, "加载中", 3, "未知", "加载中")
