@@ -16,7 +16,7 @@ interface MessageDao {
     suspend fun insertMessage(message: MessageEntity): Long
 
     @Insert
-    suspend fun insertMessageItem(item: MessageItemEntity)
+    suspend fun insertMessageItem(item: MessageItemEntity): Long
 
     @Transaction
     suspend fun createMessageWithDetail(message: MessageEntity, item: MessageItemEntity) {
@@ -39,7 +39,7 @@ interface MessageDao {
         SELECT id 
         FROM message_items b2 
         WHERE b2.messageId = a.id 
-        and b.type=1
+        and b2.type=1
         ORDER BY b2.sequence ASC, b2.itemId ASC 
         LIMIT 1
     )
@@ -50,7 +50,10 @@ interface MessageDao {
     @Query("SELECT * FROM messages WHERE id = :id")
     fun selectMessageById(id: Long):Flow<MessageEntity>
 
-    @Query("SELECT * FROM message_items WHERE itemId = :id")
+    @Query("SELECT * FROM message_items WHERE messageId = :id order by createTime desc")
     fun selectMessageItemById(id: Long):Flow<List<MessageItemEntity>>
+
+    @Query("UPDATE messages SET title = :title WHERE id = :id")
+    suspend fun updateMessage(title: String, id: Long)
 
 }

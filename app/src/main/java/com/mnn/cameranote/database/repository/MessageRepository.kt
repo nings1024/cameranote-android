@@ -46,4 +46,12 @@ class MessageRepository(
         return messageDao.selectMessageItemById(messageId).flowOn(ioDispatcher)
     }
 
+    suspend fun insertOneMessage(messageItemEntity: MessageItemEntity) {
+         messageDao.insertMessageItem(messageItemEntity)
+    }
+
+    suspend fun updateMessage(title: String, id: Long) {
+        messageDao.updateMessage(title, id)
+    }
+
 }

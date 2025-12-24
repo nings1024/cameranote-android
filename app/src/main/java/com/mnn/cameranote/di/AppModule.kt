@@ -4,7 +4,7 @@ import androidx.room.Room
 import com.mnn.cameranote.data.database.AppDatabase
 import com.mnn.cameranote.data.database.repository.MessageRepository
 import com.mnn.cameranote.screens.camera.CameraViewModel
-import com.mnn.cameranote.screens.messagedetail.MessageDetailModel
+import com.mnn.cameranote.screens.messagedetail.MessageDetailViewModel
 import com.mnn.cameranote.screens.messagelist.MessageViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
@@ -36,6 +36,7 @@ val appModule = module {
 
     viewModel { MessageViewModel(get()) }
 
-    viewModel { MessageDetailModel(get(),get()) }
+    viewModel { MessageDetailViewModel(get(),get()) }
+
 }
 

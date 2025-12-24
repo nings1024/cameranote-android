@@ -23,7 +23,8 @@ import com.mnn.cameranote.screens.messagelist.toDateTimeString
 fun ChatBubble(message: MessageItemEntity) {
     val isSelf = true
     val alignment = if (isSelf) Alignment.End else Alignment.Start
-    val bubbleColor = if (isSelf) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+    val bubbleColor =
+        if (isSelf) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
 
     Column(
         modifier = Modifier.fillMaxWidth().padding(8.dp),
@@ -40,16 +41,17 @@ fun ChatBubble(message: MessageItemEntity) {
                     AsyncImage(
                         model = message.content,
                         contentDescription = null,
-                        modifier = Modifier.sizeIn(maxWidth = 200.dp, maxHeight = 300.dp).clip(RoundedCornerShape(8.dp)),
+                        modifier = Modifier.sizeIn(maxWidth = 200.dp, maxHeight = 300.dp)
+                            .clip(RoundedCornerShape(8.dp)),
                         contentScale = ContentScale.Crop
                     )
                 } else {
-                    Text(text = message.content ?: "", style = MaterialTheme.typography.bodyLarge)
+                    Text(text = message.content, style = MaterialTheme.typography.bodyLarge)
                 }
 
                 // 时间显示
                 Text(
-                    text = message.createTime .toDateTimeString(), // 使用你之前的扩展函数
+                    text = message.createTime.toDateTimeString(), // 使用你之前的扩展函数
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.align(Alignment.End).padding(top = 4.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)

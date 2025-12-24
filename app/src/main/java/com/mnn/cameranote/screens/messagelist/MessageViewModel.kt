@@ -16,6 +16,4 @@ class MessageViewModel(private val repository: MessageRepository): ViewModel() {
             started = SharingStarted.WhileSubscribed(5000), // 界面不可见 5 秒后停止收集，节省资源
             initialValue = emptyList() // 初始状态为空列表
         )
-
-
 }
