@@ -40,6 +40,19 @@ class MessageDetailViewModel(
             repository.updateMessage(title,id)
         }
     }
+    fun updateDetail(title: String, id: Long) {
+        viewModelScope.launch {
+            repository.updateDetail(title,id)
+        }
+    }
+
+    fun deleteMessage(id: Long) {
+        viewModelScope.launch {
+            repository.deleteMessage(id)
+        }
+    }
+
+
     val message: StateFlow<MessageEntity> = repository.selectMessageById(messageId).stateIn(
         scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), // 界面不可见 5 秒后停止收集，节省资源
         initialValue = MessageEntity(1, "加载中", 3, "未知", "加载中")

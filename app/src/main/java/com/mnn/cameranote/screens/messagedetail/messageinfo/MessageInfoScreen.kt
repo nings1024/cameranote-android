@@ -7,8 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,13 +23,17 @@ import org.koin.compose.viewmodel.koinViewModel
 fun MessageInfoScreen(
     onBack: () -> Unit,
     onUpdateTitle: (Long) -> Unit,
-    onUpdateDetail: (String) -> Unit,
+    onUpdateDetail: (Long) -> Unit,
     onDelete: () -> Unit,
     viewModel: MessageDetailViewModel = koinViewModel()
 ) {
 
     val message by viewModel.message.collectAsStateWithLifecycle()
-
+    var isDeleting by remember { mutableStateOf(false) }
+    // 如果正在删除，或者数据变为了 null，直接“闭眼”，不再处理后续逻辑
+    if (isDeleting || message == null) {
+        return // 或者显示 Loading
+    }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar( // 类似微信的居中标题
@@ -66,14 +69,18 @@ fun MessageInfoScreen(
 
             // 2. 修改详情
             InfoItem(label = "详情说明", value = message.detailInfo) {
-                onUpdateDetail(message.detailInfo)
+                onUpdateDetail(message.id)
             }
 
             Spacer(modifier = Modifier.weight(1f)) // 撑开中间空间
 
             // 3. 删除按钮
             Button(
-                onClick = onDelete,
+                onClick = {
+                    isDeleting = true
+                    viewModel.deleteMessage(message.id)
+                    onDelete()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -81,7 +88,7 @@ fun MessageInfoScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White), // 白色背景
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("删除并退出", color = Color.Red, fontSize = 16.sp)
+                Text("删除", color = Color.Red, fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(20.dp))

@@ -54,4 +54,12 @@ class MessageRepository(
         messageDao.updateMessage(title, id)
     }
 
+    suspend fun updateDetail(detail: String, id: Long) {
+        messageDao.updateDetail(detail, id)
+    }
+
+    suspend fun deleteMessage(id: Long) {
+        messageDao.deleteById(id)
+    }
+
 }

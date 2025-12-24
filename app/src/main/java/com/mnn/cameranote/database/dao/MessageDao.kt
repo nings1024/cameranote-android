@@ -43,6 +43,7 @@ interface MessageDao {
         ORDER BY b2.sequence ASC, b2.itemId ASC 
         LIMIT 1
     )
+    where a.isDeleted = 0
     order by a.createTime desc
     """)
     fun selectMessages():Flow<List<MessageItem>>
@@ -55,5 +56,12 @@ interface MessageDao {
 
     @Query("UPDATE messages SET title = :title WHERE id = :id")
     suspend fun updateMessage(title: String, id: Long)
+
+    @Query("UPDATE messages SET detailInfo = :detail WHERE id = :id")
+    suspend fun updateDetail(detail: String, id: Long)
+
+    @Query("update messages set isDeleted=1 WHERE id = :messageId")
+    suspend fun deleteById(messageId: Long)
+
 
 }

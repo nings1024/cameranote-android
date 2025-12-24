@@ -12,7 +12,8 @@ data class MessageItemEntity(
     val sequence: Int,          // 序号
     val type: Int,           // 类型
     val content: String,         // 内容
-    val createTime: Long       // 创建时间 (建议存时间戳)
+    val createTime: Long,      // 创建时间 (建议存时间戳)
+    val isDeleted: Int = 0
 
 )
 
