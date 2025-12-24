@@ -1,8 +1,8 @@
 package com.mnn.cameranote.di
 
 import androidx.room.Room
-import com.mnn.cameranote.data.database.AppDatabase
-import com.mnn.cameranote.data.database.repository.MessageRepository
+import com.mnn.cameranote.database.AppDatabase
+import com.mnn.cameranote.database.repository.MessageRepository
 import com.mnn.cameranote.screens.camera.CameraViewModel
 import com.mnn.cameranote.screens.messagedetail.MessageDetailViewModel
 import com.mnn.cameranote.screens.messagelist.MessageViewModel

@@ -1,4 +1,4 @@
-package com.mnn.cameranote.data.database.entity
+package com.mnn.cameranote.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

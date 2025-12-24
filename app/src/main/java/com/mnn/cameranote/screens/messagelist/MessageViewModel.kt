@@ -2,7 +2,7 @@ package com.mnn.cameranote.screens.messagelist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mnn.cameranote.data.database.repository.MessageRepository
+import com.mnn.cameranote.database.repository.MessageRepository
 import com.mnn.cameranote.model.MessageItem
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

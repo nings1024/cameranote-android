@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import com.mnn.cameranote.navigation.AppNavHost
-import com.mnn.cameranote.screens.test.TestScreen
 import com.mnn.cameranote.ui.theme.TestTheme
 
 class MainActivity : ComponentActivity() {

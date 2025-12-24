@@ -14,8 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mnn.cameranote.data.database.repository.MessageRepository
-import kotlinx.coroutines.delay
+import com.mnn.cameranote.database.repository.MessageRepository
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate.now

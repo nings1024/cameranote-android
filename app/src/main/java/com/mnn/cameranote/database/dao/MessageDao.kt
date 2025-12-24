@@ -4,8 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import com.mnn.cameranote.data.database.entity.MessageEntity
-import com.mnn.cameranote.data.database.entity.MessageItemEntity
+import com.mnn.cameranote.database.entity.MessageEntity
+import com.mnn.cameranote.database.entity.MessageItemEntity
 import com.mnn.cameranote.model.MessageItem
 import kotlinx.coroutines.flow.Flow
 

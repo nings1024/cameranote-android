@@ -5,7 +5,7 @@ import com.mnn.cameranote.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
-class App() : Application() {
+class App : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {

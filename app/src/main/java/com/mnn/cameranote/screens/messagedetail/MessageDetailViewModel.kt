@@ -3,10 +3,10 @@ package com.mnn.cameranote.screens.messagedetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mnn.cameranote.data.database.entity.MessageEntity
-import com.mnn.cameranote.data.database.entity.MessageItemEntity
-import com.mnn.cameranote.data.database.entity.MessageType
-import com.mnn.cameranote.data.database.repository.MessageRepository
+import com.mnn.cameranote.database.entity.MessageEntity
+import com.mnn.cameranote.database.entity.MessageItemEntity
+import com.mnn.cameranote.database.entity.MessageType
+import com.mnn.cameranote.database.repository.MessageRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

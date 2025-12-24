@@ -15,8 +15,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.mnn.cameranote.data.database.entity.MessageItemEntity
-import com.mnn.cameranote.data.database.entity.MessageType
+import com.mnn.cameranote.database.entity.MessageItemEntity
+import com.mnn.cameranote.database.entity.MessageType
 import com.mnn.cameranote.screens.messagelist.toDateTimeString
 
 @Composable
@@ -51,7 +51,7 @@ fun ChatBubble(message: MessageItemEntity) {
 
                 // 时间显示
                 Text(
-                    text = message.createTime.toDateTimeString(), // 使用你之前的扩展函数
+                    text = message.createTime.toDateTimeString(),
                     style = MaterialTheme.typography.labelSmall,
                     modifier = Modifier.align(Alignment.End).padding(top = 4.dp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)

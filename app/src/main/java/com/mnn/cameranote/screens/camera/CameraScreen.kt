@@ -2,7 +2,6 @@
 package com.mnn.cameranote.screens.camera
 
 import android.Manifest
-import android.widget.Toast
 import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -67,7 +66,7 @@ fun CameraScreen(onNavigateToGallery: () -> Unit, viewModel: CameraViewModel = k
                     CaptureButton {
                         imageCapture?.let {
                             viewModel.capturePhoto(context, it, executor) {
-                                Toast.makeText(context, "保存${it.toString()}", Toast.LENGTH_SHORT).show()
+
                             }
                         }
                     }

@@ -7,7 +7,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,11 +30,7 @@ fun MessageInfoScreen(
 ) {
 
     val message by viewModel.message.collectAsStateWithLifecycle()
-    var isDeleting by remember { mutableStateOf(false) }
-    // 如果正在删除，或者数据变为了 null，直接“闭眼”，不再处理后续逻辑
-    if (isDeleting || message == null) {
-        return // 或者显示 Loading
-    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar( // 类似微信的居中标题
@@ -77,7 +74,6 @@ fun MessageInfoScreen(
             // 3. 删除按钮
             Button(
                 onClick = {
-                    isDeleting = true
                     viewModel.deleteMessage(message.id)
                     onDelete()
                 },
