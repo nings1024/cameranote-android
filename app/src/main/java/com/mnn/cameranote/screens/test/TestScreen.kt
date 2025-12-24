@@ -14,6 +14,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.mnn.cameranote.screens.camera.CameraScreen
 
 @Composable
 fun TestScreen(onBack: () -> Unit) {
@@ -24,7 +25,7 @@ fun TestScreen(onBack: () -> Unit) {
     var currentDestinationIndex by remember { mutableIntStateOf(0) }
 
     // 定义目的地列表
-    val destinations = listOf("screen1", "screen2", "screen3")
+    val destinations = listOf("screen1", "screen2", "screen3", "aa123")
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -60,6 +61,9 @@ fun TestScreen(onBack: () -> Unit) {
             }
             composable(destinations[2]) {
                 Screen3()
+            }
+            composable(destinations[3]) {
+                CameraScreen(onNavigateToGallery = { Toast.makeText(context, "在这里点击是没用的", Toast.LENGTH_SHORT).show()})
             }
         }
     }

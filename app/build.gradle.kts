@@ -62,12 +62,13 @@ dependencies {
     // 注意：Room 编译插件需在 plugins 中配置 KSP 才能工作
     ksp(libs.room.compiler)
     // --- 6. 导航 (Navigation) ---
-    implementation("androidx.navigation:navigation-compose:2.8.5")
+    implementation(libs.bundles.nav)
 
     // --- 7. 权限与工具 ---
-    implementation("com.google.accompanist:accompanist-permissions:0.37.0")
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation(libs.permissions)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.concurrent.futures.ktx)
 
     // --- 8. 测试 ---
     testImplementation("junit:junit:4.13.2")
