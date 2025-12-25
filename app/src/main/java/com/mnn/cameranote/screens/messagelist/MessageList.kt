@@ -48,8 +48,8 @@ fun ChatItem(message: MessageItem, onClick: (Long) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .clickable { onClick(message.id) },
+            .clickable { onClick(message.id) }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // 1. 图标/头像 (带圆角)

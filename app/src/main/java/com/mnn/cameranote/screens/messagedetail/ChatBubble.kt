@@ -8,7 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,9 +18,18 @@ import coil3.compose.AsyncImage
 import com.mnn.cameranote.database.entity.MessageItemEntity
 import com.mnn.cameranote.database.entity.MessageType
 import com.mnn.cameranote.screens.messagelist.toDateTimeString
+import java.io.File
 
 @Composable
 fun ChatBubble(message: MessageItemEntity) {
+    var showFullScreen by remember { mutableStateOf(false) }
+
+    if (showFullScreen && message.type == MessageType.IMAGE.ordinal) {
+        ZoomableImage(
+            model = File(message.content), // 记得转为 File 对象
+            onDismiss = { showFullScreen = false }
+        )
+    }
     val isSelf = true
     val alignment = if (isSelf) Alignment.End else Alignment.Start
     val bubbleColor =
@@ -33,7 +42,11 @@ fun ChatBubble(message: MessageItemEntity) {
         Surface(
             shape = RoundedCornerShape(12.dp),
             color = bubbleColor,
-            tonalElevation = 2.dp
+            tonalElevation = 2.dp,
+            // 如果是图片，让整个气泡支持点击查看大图
+            onClick = {
+                if (message.type == MessageType.IMAGE.ordinal) showFullScreen = true
+            }
         ) {
             Column(modifier = Modifier.padding(10.dp)) {
                 // 根据类型显示图片或文字
