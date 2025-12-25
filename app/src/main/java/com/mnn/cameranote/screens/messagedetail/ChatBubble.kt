@@ -18,15 +18,14 @@ import coil3.compose.AsyncImage
 import com.mnn.cameranote.database.entity.MessageItemEntity
 import com.mnn.cameranote.database.entity.MessageType
 import com.mnn.cameranote.screens.messagelist.toDateTimeString
-import java.io.File
 
 @Composable
 fun ChatBubble(message: MessageItemEntity) {
     var showFullScreen by remember { mutableStateOf(false) }
 
     if (showFullScreen && message.type == MessageType.IMAGE.ordinal) {
-        ZoomableImage(
-            model = File(message.content), // 记得转为 File 对象
+        FullScreenImagePreview(
+            imagePath = message.content, // 记得转为 File 对象
             onDismiss = { showFullScreen = false }
         )
     }

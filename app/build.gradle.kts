@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.bundles.camera)
     // --- 3. 图像加载 (Coil 3.x) ---
     implementation(libs.coil.compose)
+    implementation("me.saket.telephoto:zoomable-image-coil3:0.18.0")
     // --- 4. 依赖注入 (Koin 4.x) ---
     implementation(libs.bundles.koin)
 
