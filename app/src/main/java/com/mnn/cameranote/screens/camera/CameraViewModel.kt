@@ -1,7 +1,6 @@
 package com.mnn.cameranote.screens.camera
 
 import android.content.Context
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -15,9 +14,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mnn.cameranote.database.repository.MessageRepository
+import com.mnn.cameranote.util.createYearMonthDirectory
 import kotlinx.coroutines.launch
 import java.io.File
-import java.time.LocalDate.now
 import java.util.concurrent.Executor
 
 class CameraViewModel(private val repository: MessageRepository) : ViewModel() {
@@ -97,18 +96,5 @@ class CameraViewModel(private val repository: MessageRepository) : ViewModel() {
             }
         )
     }
-
-    fun Context.createYearMonthDirectory(): File {
-
-        val baseDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val yearDir = File(baseDir, now().year.toString())
-        val monthDir = File(yearDir, now().month.value.toString())
-
-        if (!monthDir.exists()) {
-            monthDir.mkdirs()
-        }
-
-        return monthDir
-    }
-
 }
+

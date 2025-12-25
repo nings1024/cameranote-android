@@ -16,14 +16,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mnn.cameranote.database.entity.MessageItemEntity
-import com.mnn.cameranote.database.entity.MessageType
+import com.mnn.cameranote.database.entity.MessageItemType
 import com.mnn.cameranote.screens.messagelist.toDateTimeString
 
 @Composable
 fun ChatBubble(message: MessageItemEntity) {
     var showFullScreen by remember { mutableStateOf(false) }
 
-    if (showFullScreen && message.type == MessageType.IMAGE.ordinal) {
+    if (showFullScreen && message.type == MessageItemType.IMAGE) {
         FullScreenImagePreview(
             imagePath = message.content, // 记得转为 File 对象
             onDismiss = { showFullScreen = false }
@@ -44,12 +44,12 @@ fun ChatBubble(message: MessageItemEntity) {
             tonalElevation = 2.dp,
             // 如果是图片，让整个气泡支持点击查看大图
             onClick = {
-                if (message.type == MessageType.IMAGE.ordinal) showFullScreen = true
+                if (message.type == MessageItemType.IMAGE) showFullScreen = true
             }
         ) {
             Column(modifier = Modifier.padding(10.dp)) {
                 // 根据类型显示图片或文字
-                if (message.type == MessageType.IMAGE.ordinal && message.content != null) {
+                if (message.type == MessageItemType.IMAGE) {
                     AsyncImage(
                         model = message.content,
                         contentDescription = null,

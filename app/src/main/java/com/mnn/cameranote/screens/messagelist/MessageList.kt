@@ -19,14 +19,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.mnn.cameranote.model.MessageItem
 import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun WeChatConversationList(messages: List<MessageItem>,onItemClick: (Long) -> Unit) {
+fun WeChatConversationList(messages: List<MessageUiModel>,onItemClick: (Long) -> Unit) {
     LazyColumn(modifier = Modifier.fillMaxSize().background(Color.White)) {
         items(messages) { message ->
             Column {
@@ -43,7 +42,7 @@ fun WeChatConversationList(messages: List<MessageItem>,onItemClick: (Long) -> Un
 }
 
 @Composable
-fun ChatItem(message: MessageItem, onClick: (Long) -> Unit) {
+fun ChatItem(message: MessageUiModel, onClick: (Long) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

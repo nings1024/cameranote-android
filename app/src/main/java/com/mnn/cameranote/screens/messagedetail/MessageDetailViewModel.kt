@@ -2,14 +2,15 @@ package com.mnn.cameranote.screens.messagedetail
 
 import android.content.Context
 import android.net.Uri
-import android.os.Environment
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mnn.cameranote.database.entity.MessageEntity
 import com.mnn.cameranote.database.entity.MessageItemEntity
-import com.mnn.cameranote.database.entity.MessageType
+import com.mnn.cameranote.database.entity.MessageItemSource
+import com.mnn.cameranote.database.entity.MessageItemType
 import com.mnn.cameranote.database.repository.MessageRepository
+import com.mnn.cameranote.util.createYearMonthDirectory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +31,7 @@ class MessageDetailViewModel(
                     messageId = messageId,
                     content = inputText,
                     sequence = 1,
-                    type = MessageType.TEXT.ordinal,
+                    type = MessageItemType.TEXT,
                     createTime = System.currentTimeMillis()
                 )
             )
@@ -38,8 +39,8 @@ class MessageDetailViewModel(
     }
 
     // 1. 编写一个辅助函数：将 Uri 转换为你的私有 File
-    fun copyUriToPrivateStorage(context: Context, uri: android.net.Uri): File? {
-        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) // 获取你的私有目录
+    fun copyUriToPrivateStorage(context: Context, uri: Uri): File? {
+        val storageDir = context.createYearMonthDirectory()
         val fileName = "IMG_${System.currentTimeMillis()}_${(100..999).random()}.jpg"
         val destFile = File(storageDir, fileName)
 
@@ -76,8 +77,8 @@ class MessageDetailViewModel(
                                     messageId = messageId, // 确保这个 ID 是正确生成的逻辑
                                     content = savedFile.absolutePath, // 存入路径
                                     sequence = 1,
-                                    type = MessageType.IMAGE.ordinal,
-                                    createTime = System.currentTimeMillis()
+                                    type = MessageItemType.IMAGE,
+                                    source = MessageItemSource.UPLOAD
                                 )
                             )
                         }
@@ -111,7 +112,11 @@ class MessageDetailViewModel(
 
     val message: StateFlow<MessageEntity> = repository.selectMessageById(messageId).stateIn(
         scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), // 界面不可见 5 秒后停止收集，节省资源
-        initialValue = MessageEntity(1, "加载中", 3, "未知", "加载中")
+        initialValue = MessageEntity(
+            title = "加载中",
+            location = "未知",
+            detailInfo = "加载中"
+        )
     )
     val messageItems: StateFlow<List<MessageItemEntity>> = repository.selectMessageItemById(messageId).stateIn(
         scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), // 界面不可见 5 秒后停止收集，节省资源

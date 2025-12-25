@@ -3,8 +3,8 @@ package com.mnn.cameranote.database.repository
 import com.mnn.cameranote.database.dao.MessageDao
 import com.mnn.cameranote.database.entity.MessageEntity
 import com.mnn.cameranote.database.entity.MessageItemEntity
-import com.mnn.cameranote.database.entity.MessageType
-import com.mnn.cameranote.model.MessageItem
+import com.mnn.cameranote.database.entity.MessageItemType
+import com.mnn.cameranote.database.entity.relations.MessageWithContent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -27,14 +27,14 @@ class MessageRepository(
         val item = MessageItemEntity(
             messageId = 0, // 占位，Dao 中会处理
             sequence = 1,
-            type = MessageType.IMAGE.ordinal,
+            type = MessageItemType.IMAGE,
             content = filePath,
             createTime = currentTime
         )
         messageDao.createMessageWithDetail(message, item)
     }
 
-    fun selectMessages(): Flow<List<MessageItem>> {
+    fun selectMessages(): Flow<List<MessageWithContent>> {
         return messageDao.selectMessages().flowOn(ioDispatcher)
     }
 

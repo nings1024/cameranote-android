@@ -6,7 +6,9 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.mnn.cameranote.database.entity.MessageEntity
 import com.mnn.cameranote.database.entity.MessageItemEntity
-import com.mnn.cameranote.model.MessageItem
+import com.mnn.cameranote.database.entity.MessageItemSource
+import com.mnn.cameranote.database.entity.MessageItemType
+import com.mnn.cameranote.database.entity.relations.MessageWithContent
 import kotlinx.coroutines.flow.Flow
 
 // data/database/dao/MessageDao.kt
@@ -32,21 +34,22 @@ interface MessageDao {
     @Query("""
             SELECT 
         a.*,
-        b.content
+        b.content 
     FROM 
         messages a
     LEFT JOIN message_items b ON b.itemId = (
-        SELECT id 
+        SELECT itemId 
         FROM message_items b2 
         WHERE b2.messageId = a.id 
-        and b2.type=1
+        and b2.type=:type
+        and b2.source=:source
         ORDER BY b2.sequence ASC, b2.itemId ASC 
         LIMIT 1
     )
     where a.isDeleted = 0
     order by a.createTime desc
     """)
-    fun selectMessages():Flow<List<MessageItem>>
+    fun selectMessages(type:Int= MessageItemType.IMAGE.value,source:Int= MessageItemSource.CAMERA.value):Flow<List<MessageWithContent>>
 
     @Query("SELECT * FROM messages WHERE id = :id")
     fun selectMessageById(id: Long):Flow<MessageEntity>
@@ -62,6 +65,4 @@ interface MessageDao {
 
     @Query("update messages set isDeleted=1 WHERE id = :messageId")
     suspend fun deleteById(messageId: Long)
-
-
 }
