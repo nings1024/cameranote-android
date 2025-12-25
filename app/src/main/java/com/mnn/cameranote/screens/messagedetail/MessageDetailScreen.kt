@@ -1,7 +1,9 @@
 package com.mnn.cameranote.screens.messagedetail
 
-import android.content.ContentValues.TAG
-import android.util.Log
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,11 +27,20 @@ import org.koin.compose.viewmodel.koinViewModel
 fun MessageDetailScreen(
     onBack: () -> Unit, viewModel: MessageDetailViewModel = koinViewModel(), onEditClick: (Long) -> Unit
 ) {
+    val context = LocalContext.current
     // 从 ViewModel 获取状态
     val message by viewModel.message.collectAsStateWithLifecycle()
     val messageItems by viewModel.messageItems.collectAsStateWithLifecycle()
     var inputText by remember { mutableStateOf("") }
     var isDetailExpanded by remember { mutableStateOf(false) }
+    var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
+
+    // 注册图片选择器 (System Photo Picker)
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 9)
+    ) { uris->
+        selectedImages=selectedImages + uris
+    }
 
     Scaffold(
         topBar = {
@@ -84,12 +96,24 @@ fun MessageDetailScreen(
             ChatInputBar(
                 text = inputText,
                 onTextChange = { inputText = it },
-                onSendText = {
-                    Log.d(TAG, "MessageDetailScreen: $inputText")
-                    viewModel.sendMessage(inputText)
-                    inputText = ""
+                selectedImages = selectedImages,
+                onRemoveImage = { uri ->
+                    selectedImages = selectedImages.filterNot { it == uri }
                 },
-                onAddImage = { /* 调用系统相册选择器 */ }
+                onAddImageClick = {
+                    // 触发系统选择器
+                    launcher.launch(
+
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                },
+                onSendClick = {
+                    // 执行上传逻辑
+                    viewModel.uploadContent(context,inputText, selectedImages)
+                    // 重置状态
+                    inputText = ""
+                    selectedImages = emptyList()
+                }
             )
         }
     ) { innerPadding ->
