@@ -22,7 +22,8 @@ class MessageRepository(
             title = LocalDate.now().toString(),
             createTime = currentTime,
             location = "Unknown",
-            detailInfo = LocalDate.now().toString()
+            detailInfo = LocalDate.now().toString(),
+            isTemp = true
         )
         val item = MessageItemEntity(
             messageId = 0, // 占位，Dao 中会处理
@@ -51,7 +52,7 @@ class MessageRepository(
     }
 
     suspend fun updateMessage(title: String, id: Long) {
-        messageDao.updateMessage(title, id)
+        messageDao.updateMessageNote(title, id)
     }
 
     suspend fun updateDetail(detail: String, id: Long) {
@@ -60,6 +61,10 @@ class MessageRepository(
 
     suspend fun deleteMessage(id: Long) {
         messageDao.deleteById(id)
+    }
+
+    suspend fun applyNoteAndMerge(note: String) {
+        messageDao.applyNoteAndMerge(note)
     }
 
 }
