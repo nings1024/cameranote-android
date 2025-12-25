@@ -40,11 +40,8 @@ class CameraViewModel(private val repository: MessageRepository) : ViewModel() {
             return
         }
         viewModelScope.launch {
-        //查询5分钟以内的所有未确定图片
-            //没有就直接结束
-        //插入该数据
-        //更新5分钟以内所有未确定图片为该messageid
-        //删除旧的
+            repository.applyNoteAndMerge(photoNote)
+            photoNote = ""
         }
 
     }
@@ -75,10 +72,7 @@ class CameraViewModel(private val repository: MessageRepository) : ViewModel() {
      * @param onSuccess 拍照成功后的回调函数，接收保存的图片文件作为参数
      */
     fun capturePhoto(
-        context: Context,
-        imageCapture: ImageCapture,
-        executor: Executor,
-        onSuccess: (File) -> Unit
+        context: Context, imageCapture: ImageCapture, executor: Executor, onSuccess: (File) -> Unit
     ) {
         // 1. 获取私有目录路径: /Android/data/你的包名/files/Pictures
         val storageDir = context.createYearMonthDirectory()
@@ -93,9 +87,7 @@ class CameraViewModel(private val repository: MessageRepository) : ViewModel() {
 
         // 执行拍照操作，配置保存选项、执行器和回调
         imageCapture.takePicture(
-            outputOptions,
-            executor,
-            object : ImageCapture.OnImageSavedCallback {
+            outputOptions, executor, object : ImageCapture.OnImageSavedCallback {
                 // 图片保存成功的回调处理
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     viewModelScope.launch {
@@ -113,8 +105,7 @@ class CameraViewModel(private val repository: MessageRepository) : ViewModel() {
                     // 记录错误日志
                     Log.e("Camera", "保存至私有路径失败: ${exception.message}")
                 }
-            }
-        )
+            })
     }
 }
 

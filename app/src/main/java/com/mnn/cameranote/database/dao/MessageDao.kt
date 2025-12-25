@@ -1,5 +1,7 @@
 package com.mnn.cameranote.database.dao
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -31,7 +33,8 @@ interface MessageDao {
     @Query("SELECT * FROM message_items")
     fun getAllMessages(): Flow<List<MessageItemEntity>>
 
-    @Query("""
+    @Query(
+        """
             SELECT 
         a.*,
         b.content 
@@ -48,21 +51,56 @@ interface MessageDao {
     )
     where a.isDeleted = 0
     order by a.createTime desc
-    """)
-    fun selectMessages(type:Int= MessageItemType.IMAGE.value,source:Int= MessageItemSource.CAMERA.value):Flow<List<MessageWithContent>>
+    """
+    )
+    fun selectMessages(
+        type: Int = MessageItemType.IMAGE.value, source: Int = MessageItemSource.CAMERA.value
+    ): Flow<List<MessageWithContent>>
 
     @Query("SELECT * FROM messages WHERE id = :id")
-    fun selectMessageById(id: Long):Flow<MessageEntity>
+    fun selectMessageById(id: Long): Flow<MessageEntity>
 
     @Query("SELECT * FROM message_items WHERE messageId = :id order by createTime desc")
-    fun selectMessageItemById(id: Long):Flow<List<MessageItemEntity>>
+    fun selectMessageItemById(id: Long): Flow<List<MessageItemEntity>>
 
-    @Query("UPDATE messages SET title = :title WHERE id = :id")
-    suspend fun updateMessage(title: String, id: Long)
+    @Query("UPDATE messages SET title = :title,isTemp=0 WHERE id = :id")
+    suspend fun updateMessageNote(title: String, id: Long)
 
     @Query("UPDATE messages SET detailInfo = :detail WHERE id = :id")
     suspend fun updateDetail(detail: String, id: Long)
 
+
     @Query("update messages set isDeleted=1 WHERE id = :messageId")
     suspend fun deleteById(messageId: Long)
+
+
+    @Query("SELECT id FROM messages WHERE isTemp = 1 AND createTime > :timeLimit order by createTime desc")
+    suspend fun getUnnotedMessageIds(timeLimit: Long): List<Long>
+
+    // Repository
+    suspend fun applyNoteAndMerge(note: String) {
+        val timeLimit = System.currentTimeMillis() - 5 * 60 * 1000
+
+        // 1. 找到该 ID 之前 5 分钟内所有临时的、没备注的消息 ID
+        val idsToMerge = getUnnotedMessageIds(timeLimit)
+        Log.d(TAG, "applyNoteAndMerge: $idsToMerge")
+        if (idsToMerge.isEmpty()) {
+            return
+        }
+        val firstId = idsToMerge.first()
+        val otherIds = idsToMerge.drop(1)
+        updateMessageNote(note, firstId)
+        Log.d(TAG, "applyNoteAndMerge: $otherIds")
+        if (otherIds.isNotEmpty()) {
+            Log.d(TAG, "applyNoteAndMerge: $otherIds $firstId")
+            moveItemsToMessage(fromIds = otherIds, toId = firstId)
+            deleteMessages(otherIds)
+        }
+    }
+
+    @Query("DELETE FROM messages WHERE id IN (:ids)")
+    suspend fun deleteMessages(ids: List<Long>)
+
+    @Query("UPDATE message_items set messageId=:toId WHERE messageId IN (:fromIds)")
+    suspend fun moveItemsToMessage(fromIds: List<Long>, toId: Long)
 }
