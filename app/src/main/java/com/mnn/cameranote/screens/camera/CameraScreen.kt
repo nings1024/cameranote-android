@@ -7,8 +7,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +24,9 @@ import androidx.core.content.ContextCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.mnn.cameranote.screens.camera.compoents.AlbumThumbnail
+import com.mnn.cameranote.screens.camera.compoents.CameraControls
+import com.mnn.cameranote.screens.camera.compoents.NoteInputDialog
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -70,9 +77,14 @@ fun CameraScreen(onNavigateToGallery: () -> Unit, viewModel: CameraViewModel = k
                             }
                         }
                     }
-
-                    // 右下角占位或添加其他按钮
-                    Spacer(modifier = Modifier.size(48.dp)) //
+                    // 这里把原来的 Spacer 换成备注按钮
+                    IconButton(onClick = { viewModel.showNoteDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.EditNote,
+                            contentDescription = "备注",
+                            tint = Color.White
+                        )
+                    }
                 }
             }
 
@@ -80,6 +92,15 @@ fun CameraScreen(onNavigateToGallery: () -> Unit, viewModel: CameraViewModel = k
             if (viewModel.isFlashing) {
                 Box(modifier = Modifier.fillMaxSize().background(Color.White.copy(alpha = 0.5f)))
             }
+            NoteInputDialog(
+                isVisible = viewModel.showNoteDialog,
+                noteText = viewModel.photoNote,
+                onNoteChange = { viewModel.photoNote = it },
+                onDismiss = {
+                    viewModel.showNoteDialog = false
+                    viewModel.updateNote()
+                }
+            )
         } else {
             PermissionDeniedContent { cameraPermissionState.launchPermissionRequest() }
         }

@@ -1,4 +1,4 @@
-package com.mnn.cameranote.screens.camera
+package com.mnn.cameranote.screens.camera.compoents
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding

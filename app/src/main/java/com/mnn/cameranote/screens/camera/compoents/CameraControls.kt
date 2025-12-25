@@ -1,4 +1,4 @@
-package com.mnn.cameranote.screens.camera
+package com.mnn.cameranote.screens.camera.compoents
 
 import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.layout.*
