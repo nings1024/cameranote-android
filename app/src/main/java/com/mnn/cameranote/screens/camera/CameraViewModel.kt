@@ -20,15 +20,35 @@ import java.io.File
 import java.util.concurrent.Executor
 
 class CameraViewModel(private val repository: MessageRepository) : ViewModel() {
-    // 状态管理
+    // 摄像头前/后置
     var lensFacing by mutableIntStateOf(CameraSelector.LENS_FACING_BACK)
         private set
 
+    //闪光灯模式
     var flashMode by mutableIntStateOf(ImageCapture.FLASH_MODE_OFF)
         private set
 
     var isFlashing by mutableStateOf(false)
         private set
+
+    // 是否在写备注
+    var showNoteDialog by mutableStateOf(false) // 控制输入框显示
+    var photoNote by mutableStateOf("")         // 存储备注文本
+
+    fun updateNote() {
+        if (photoNote.trim().isEmpty()) {
+            return
+        }
+        viewModelScope.launch {
+        //查询5分钟以内的所有未确定图片
+            //没有就直接结束
+        //插入该数据
+        //更新5分钟以内所有未确定图片为该messageid
+        //删除旧的
+        }
+
+    }
+
 
     fun toggleCamera() {
         lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
@@ -79,7 +99,7 @@ class CameraViewModel(private val repository: MessageRepository) : ViewModel() {
                 // 图片保存成功的回调处理
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     viewModelScope.launch {
-                        repository.createNewMessage(photoFile.absolutePath )
+                        repository.createNewMessage(photoFile.absolutePath)
                     }
 
                     // 切换到主线程执行成功回调
