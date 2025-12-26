@@ -48,7 +48,7 @@ class MessageRepository(
     }
 
     suspend fun insertOneMessage(messageItemEntity: MessageItemEntity) {
-         messageDao.insertMessageItem(messageItemEntity)
+        messageDao.insertMessageItem(messageItemEntity)
     }
 
     suspend fun updateMessage(title: String, id: Long) {
@@ -71,4 +71,7 @@ class MessageRepository(
         return messageDao.getLastPhoto()
     }
 
+    fun selectMessages(query: String): Flow<List<MessageWithContent>> {
+        return messageDao.selectMessages(query).flowOn(ioDispatcher)
+    }
 }

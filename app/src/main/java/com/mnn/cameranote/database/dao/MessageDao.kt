@@ -110,4 +110,51 @@ interface MessageDao {
     """
     )
     fun getLastPhoto(type: MessageItemType = MessageItemType.IMAGE): Flow<String?>
+
+    @Query(
+        """
+    SELECT 
+        a.*,
+        b.content 
+    FROM 
+        messages a
+    LEFT JOIN message_items b ON b.itemId = (
+        SELECT itemId 
+        FROM message_items b2 
+        WHERE b2.messageId = a.id 
+        and b2.type=:type
+        and b2.source=:source
+        ORDER BY b2.sequence ASC, b2.itemId ASC 
+        LIMIT 1
+    )
+    where a.isDeleted = 0
+    AND a.id IN (
+select
+	id
+from
+	messages
+WHERE
+	isDeleted = 0
+	and (
+	messages.title LIKE '%'||:ftsQuery||'%'
+		or detailInfo LIKE '%'||:ftsQuery||'%'
+	)
+UNION
+	select
+	messageId
+from
+	message_items
+WHERE
+	isDeleted = 0
+	and message_items."type" = 0
+	and content LIKE '%'||:ftsQuery||'%'
+    )
+    ORDER BY a.createTime DESC;
+    """
+    )
+    fun selectMessages(
+        ftsQuery: String,
+        type: Int = MessageItemType.IMAGE.value,
+        source: Int = MessageItemSource.CAMERA.value
+    ):Flow<List<MessageWithContent>>
 }

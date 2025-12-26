@@ -25,8 +25,8 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun WeChatConversationList(messages: List<MessageUiModel>,onItemClick: (Long) -> Unit) {
-    LazyColumn(modifier = Modifier.fillMaxSize().background(Color.White)) {
+fun NoteList(messages: List<MessageUiModel>,paddingValues:PaddingValues,onItemClick: (Long) -> Unit) {
+    LazyColumn(contentPadding = paddingValues) {
         items(messages) { message ->
             Column {
                 ChatItem(message,onClick=onItemClick)
