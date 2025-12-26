@@ -67,4 +67,8 @@ class MessageRepository(
         messageDao.applyNoteAndMerge(note)
     }
 
+    fun getLastPhoto(): Flow<String?> {
+        return messageDao.getLastPhoto()
+    }
+
 }

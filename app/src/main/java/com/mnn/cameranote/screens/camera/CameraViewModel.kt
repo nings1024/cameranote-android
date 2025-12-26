@@ -15,6 +15,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mnn.cameranote.database.repository.MessageRepository
 import com.mnn.cameranote.util.createYearMonthDirectory
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.Executor
@@ -34,6 +37,16 @@ class CameraViewModel(private val repository: MessageRepository) : ViewModel() {
     // 是否在写备注
     var showNoteDialog by mutableStateOf(false) // 控制输入框显示
     var photoNote by mutableStateOf("")         // 存储备注文本
+
+    //
+    // 使用 StateFlow 存储 UI 状态
+    val lastPhoto: StateFlow<String?> = repository.getLastPhoto()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000), // 只有有人看的时候才查
+            initialValue = null // 没查出来之前的默认值
+        )
+
 
     fun updateNote() {
         if (photoNote.trim().isEmpty()) {
@@ -93,7 +106,6 @@ class CameraViewModel(private val repository: MessageRepository) : ViewModel() {
                     viewModelScope.launch {
                         repository.createNewMessage(photoFile.absolutePath)
                     }
-
                     // 切换到主线程执行成功回调
                     Handler(Looper.getMainLooper()).post {
                         onSuccess(photoFile)

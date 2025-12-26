@@ -3,7 +3,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoLibrary
@@ -26,7 +25,7 @@ fun AlbumThumbnail(
         modifier = Modifier
             .padding(16.dp) // 距离边缘的间距
             .size(60.dp)    // 缩略图大小
-            .border(2.dp, Color.White, CircleShape), // 白色边圈，增加质感
+            .border(2.dp, Color.White, RoundedCornerShape(16.dp)), // 白色边圈，增加质感
         shape = RoundedCornerShape(16.dp),
         color = Color.Gray // 无图时的背景色
     ) {

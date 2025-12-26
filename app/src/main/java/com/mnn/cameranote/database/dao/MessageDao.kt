@@ -103,4 +103,11 @@ interface MessageDao {
 
     @Query("UPDATE message_items set messageId=:toId WHERE messageId IN (:fromIds)")
     suspend fun moveItemsToMessage(fromIds: List<Long>, toId: Long)
+
+    @Query(
+        """
+        SELECT content FROM message_items where isDeleted=0 and type=:type order by createTime desc limit 1
+    """
+    )
+    fun getLastPhoto(type: MessageItemType = MessageItemType.IMAGE): Flow<String?>
 }

@@ -38,6 +38,9 @@ fun CameraScreen(onNavigateToGallery: () -> Unit, viewModel: CameraViewModel = k
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
+//    获取最后一张图片
+    val lastPhotoUri by viewModel.lastPhoto.collectAsState()
+
     Box(modifier = Modifier.fillMaxSize()) {
         if (cameraPermissionState.status.isGranted) {
             CameraPreview(
@@ -65,7 +68,7 @@ fun CameraScreen(onNavigateToGallery: () -> Unit, viewModel: CameraViewModel = k
                 ) {
                     // 左下角相册
                     AlbumThumbnail(
-                        lastPhotoUri = null,
+                        lastPhotoUri = lastPhotoUri,
                         onClick = { onNavigateToGallery() }
                     )
 
