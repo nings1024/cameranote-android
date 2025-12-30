@@ -71,8 +71,8 @@ interface MessageDao {
     suspend fun updateDetail(detail: String, id: Long)
 
 
-    @Query("update messages set isDeleted=1 WHERE id = :messageId")
-    suspend fun deleteById(messageId: Long)
+    @Query("update messages set isDeleted=1,deletedTIme=:deletedTIme WHERE id = :messageId")
+    suspend fun deleteById(messageId: Long,deletedTIme: Long= System.currentTimeMillis())
 
 
 /**

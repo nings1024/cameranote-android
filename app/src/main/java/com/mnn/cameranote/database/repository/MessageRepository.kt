@@ -23,7 +23,10 @@ class MessageRepository(
             createTime = currentTime,
             location = "Unknown",
             detailInfo = LocalDate.now().toString(),
-            isTemp = true
+            isTemp = true,
+            year = LocalDate.now().year,
+            month = LocalDate.now().monthValue,
+            day = LocalDate.now().dayOfMonth
         )
         val item = MessageItemEntity(
             messageId = 0, // 占位，Dao 中会处理
