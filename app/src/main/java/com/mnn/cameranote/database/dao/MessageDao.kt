@@ -12,6 +12,7 @@ import com.mnn.cameranote.database.entity.MessageItemSource
 import com.mnn.cameranote.database.entity.MessageItemType
 import com.mnn.cameranote.database.entity.relations.MessageWithContent
 import kotlinx.coroutines.flow.Flow
+import java.util.*
 
 // data/database/dao/MessageDao.kt
 @Dao
@@ -74,14 +75,24 @@ interface MessageDao {
     suspend fun deleteById(messageId: Long)
 
 
+/**
+ * 从数据库中查询临时且创建时间晚于指定时间点的消息ID
+ *
+ * @param timeLimit 时间限制，单位为毫秒，只查询创建时间晚于该时间点的消息
+ * @return 返回符合条件消息ID的列表，按创建时间降序排列
+ */
     @Query("SELECT id FROM messages WHERE isTemp = 1 AND createTime > :timeLimit order by createTime desc")
     suspend fun getUnnotedMessageIds(timeLimit: Long): List<Long>
 
     // Repository
     suspend fun applyNoteAndMerge(note: String) {
-        val timeLimit = System.currentTimeMillis() - 5 * 60 * 1000
-
-        // 1. 找到该 ID 之前 5 分钟内所有临时的、没备注的消息 ID
+//        获取今天0点的时间戳
+        val timeLimit = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
         val idsToMerge = getUnnotedMessageIds(timeLimit)
         Log.d(TAG, "applyNoteAndMerge: $idsToMerge")
         if (idsToMerge.isEmpty()) {
@@ -156,5 +167,5 @@ WHERE
         ftsQuery: String,
         type: Int = MessageItemType.IMAGE.value,
         source: Int = MessageItemSource.CAMERA.value
-    ):Flow<List<MessageWithContent>>
+    ): Flow<List<MessageWithContent>>
 }

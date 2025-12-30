@@ -71,6 +71,7 @@ fun GenericDetailEditScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .imePadding()
         ) {
             Spacer(modifier = Modifier.height(12.dp))
 
