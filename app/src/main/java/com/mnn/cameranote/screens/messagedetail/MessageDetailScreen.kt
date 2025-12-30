@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mnn.cameranote.database.entity.MessageItemType
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -28,12 +29,23 @@ fun MessageDetailScreen(
     onBack: () -> Unit, viewModel: MessageDetailViewModel = koinViewModel(), onEditClick: (Long) -> Unit
 ) {
     val context = LocalContext.current
-    // 从 ViewModel 获取状态
+//    事件
     val message by viewModel.message.collectAsStateWithLifecycle()
+//    内容列表
     val messageItems by viewModel.messageItems.collectAsStateWithLifecycle()
+    // 2. 派生出仅包含图片的列表（通过 derivedStateOf 保证仅在 messageItems 改变时重新计算）
+    val imageMessages by remember(messageItems) {
+        derivedStateOf {
+            messageItems.filter { it.type == MessageItemType.IMAGE }.reversed()
+        }
+    }
+//    待发送消息
     var inputText by remember { mutableStateOf("") }
+//    事件详情
     var isDetailExpanded by remember { mutableStateOf(false) }
+//    待发送图片
     var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
+
 
     // 注册图片选择器 (System Photo Picker)
     val launcher = rememberLauncherForActivityResult(
@@ -122,7 +134,7 @@ fun MessageDetailScreen(
             modifier = Modifier.fillMaxSize().padding(innerPadding), reverseLayout = true // 聊天常用，新消息在底，列表反转
         ) {
             items(messageItems) { msg ->
-                ChatBubble(msg)
+                ChatBubble(msg,imageMessages)
             }
         }
     }

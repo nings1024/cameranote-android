@@ -20,12 +20,16 @@ import com.mnn.cameranote.database.entity.MessageItemType
 import com.mnn.cameranote.screens.messagelist.toDateTimeString
 
 @Composable
-fun ChatBubble(message: MessageItemEntity) {
+fun ChatBubble(message: MessageItemEntity, allImageMessages: List<MessageItemEntity>) {
     var showFullScreen by remember { mutableStateOf(false) }
 
     if (showFullScreen && message.type == MessageItemType.IMAGE) {
-        FullScreenImagePreview(
-            imagePath = message.content, // 记得转为 File 对象
+        // 找到当前图片在图片列表中的索引
+        val currentIndex = allImageMessages.indexOf(message)
+
+        FullScreenImagePager(
+            images = allImageMessages,
+            initialIndex = if (currentIndex == -1) 0 else currentIndex,
             onDismiss = { showFullScreen = false }
         )
     }
