@@ -15,8 +15,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.mnn.cameranote.database.entity.MessageItemEntity
-import com.mnn.cameranote.database.entity.MessageItemType
+import com.mnn.cameranote.data.local.entity.MessageItemEntity
+import com.mnn.cameranote.data.local.entity.MessageItemType
 import com.mnn.cameranote.screens.messagelist.toDateTimeString
 
 @Composable

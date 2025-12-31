@@ -3,10 +3,8 @@ package com.mnn.cameranote.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.mnn.cameranote.screens.camera.CameraScreen
 import com.mnn.cameranote.screens.messagedetail.MessageDetailScreen
 import com.mnn.cameranote.screens.messagedetail.messageinfo.GenericDetailEditScreen
@@ -16,64 +14,66 @@ import com.mnn.cameranote.screens.messagelist.MessageScreen
 
 @Composable
 fun AppNavHost(
-    navController: NavHostController, modifier: Modifier = Modifier
+    navController: NavHostController,
+    modifier: Modifier = Modifier
 ) {
     NavHost(
-        navController = navController, startDestination = Destinations.CAMERA_ROUTE, modifier = modifier
+        navController = navController,
+        startDestination = Route.Camera, // 直接传入对象
+        modifier = modifier
     ) {
-        composable(Destinations.CAMERA_ROUTE) {
+        // 1. 相机页
+        composable<Route.Camera> {
             CameraScreen(onNavigateToGallery = {
-                navController.navigate(Destinations.GALLERY_ROUTE)
+                navController.navigate(Route.Gallery)
             })
         }
-        composable(Destinations.GALLERY_ROUTE) {
-            MessageScreen(onBack = { navController.popBackStack() }, onDetailClick = {
-                navController.navigate(Destinations.createDetailRoute(it))
-            })
+
+        // 2. 列表页
+        composable<Route.Gallery> {
+            MessageScreen(
+                onBack = { navController.popBackStack() },
+                onDetailClick = { id ->
+                    navController.navigate(Route.Detail(id)) // 自动序列化参数
+                }
+            )
         }
-        composable(
-            Destinations.DETAIL_ROUTE,
-            arguments = listOf(navArgument("id") { type = NavType.LongType } // 声明参数名和类型
-            )) {
+
+        // 3. 详情页
+        composable<Route.Detail> { backStackEntry ->
+            // 自动从路由中解析出参数，无需定义 Key
             MessageDetailScreen(
                 onBack = { navController.popBackStack() },
-                onEditClick = { navController.navigate(Destinations.createInfoRoute(it)) })
+                onEditClick = { id ->
+                    navController.navigate(Route.MessageInfo(id))
+                }
+            )
         }
-        composable(
-            Destinations.MESSAGE_INFO_ROUTE,
-            arguments = listOf(navArgument("id") { type = NavType.LongType } // 声明参数名和类型
-            )) {
+
+        // 4. 信息管理页
+        composable<Route.MessageInfo> { backStackEntry ->
             MessageInfoScreen(
                 onBack = { navController.popBackStack() },
-                onUpdateTitle = {
-                    navController.navigate(Destinations.createEditTitleRoute(it))
-                },
-                onUpdateDetail = {
-                    navController.navigate(Destinations.createEditDetailRoute(it))
-                },
+                onUpdateTitle = { id -> navController.navigate(Route.EditTitle(id)) },
+                onUpdateDetail = { id -> navController.navigate(Route.EditDetail(id)) },
                 onDelete = {
-                    navController.navigate(Destinations.GALLERY_ROUTE) {
-                        popUpTo(Destinations.GALLERY_ROUTE) { inclusive = true }
+                    navController.navigate(Route.Gallery) {
+                        popUpTo<Route.Gallery> { inclusive = true }
                     }
                 }
             )
         }
-        composable(
-            Destinations.EDIT_TITLE_ROUTE, arguments = listOf(
-                navArgument("id") { type = NavType.LongType },
-            )
-        ) {
+
+        // 5. 通用编辑页 (标题/描述)
+        composable<Route.EditTitle> {
             GenericEditScreen(
                 label = "修改标题",
                 onBack = { navController.popBackStack() },
                 onSave = { navController.popBackStack() }
             )
         }
-        composable(
-            Destinations.EDIT_DETAIL_ROUTE, arguments = listOf(
-                navArgument("id") { type = NavType.LongType },
-            )
-        ) {
+
+        composable<Route.EditDetail> {
             GenericDetailEditScreen(
                 onBack = { navController.popBackStack() },
                 onSave = { navController.popBackStack() }

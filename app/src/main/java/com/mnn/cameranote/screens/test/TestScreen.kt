@@ -1,103 +1,97 @@
 package com.mnn.cameranote.screens.test
 
-import android.widget.Toast
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.mnn.cameranote.screens.camera.CameraScreen
+import java.util.*
 
 @Composable
 fun TestScreen(onBack: () -> Unit) {
-    val context = LocalContext.current
-    val navController = rememberNavController()
+    val balls = remember { mutableStateListOf<Ball>() } // 可变的球体列表
+    val scope = rememberCoroutineScope() // 用于启动协程
 
-    // 记录当前目的地的索引
-    var currentDestinationIndex by remember { mutableIntStateOf(0) }
-
-    // 定义目的地列表
-    val destinations = listOf("screen1", "screen2", "screen3", "aa123")
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black) // 游戏背景
+            .pointerInput(Unit) { // 核心：获取点击位置
+                detectTapGestures(
+                    onTap = { offset ->
+                        // 每次点击，生成一个新球
+                        val newBall = Ball(
+                            color = Color(
+                                red = (0..255).random(),
+                                green = (0..255).random(),
+                                blue = (0..255).random(),
+                                alpha = 255
+                            ),
+                            initialOffset = offset,
+                            targetY = size.height.toFloat() + 50f // 掉落到屏幕外一点点
+                        )
+                        balls.add(newBall) // 添加到列表
+                    }
+                )
+            }
     ) {
-        Spacer(modifier = Modifier.height(50.dp))
-
-        Button(
-            onClick = {
-                // 循环切换到下一个目的地
-                currentDestinationIndex = (currentDestinationIndex + 1) % destinations.size
-                val destination = destinations[currentDestinationIndex]
-                navController.navigate(destination)
-                Toast.makeText(context, "切换到页面${currentDestinationIndex + 1}", Toast.LENGTH_SHORT).show()
-            }
-        ) {
-            Text("切换页面")
-        }
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-        // NavHost
-        NavHost(
-            navController = navController,
-            startDestination = destinations[0],
-            modifier = Modifier.fillMaxSize()
-        ) {
-            composable(destinations[0]) {
-                Screen1()
-            }
-            composable(destinations[1]) {
-                Screen2(navController)
-            }
-            composable(destinations[2]) {
-                Screen3()
-            }
-            composable(destinations[3]) {
-                CameraScreen(onNavigateToGallery = { Toast.makeText(context, "在这里点击是没用的", Toast.LENGTH_SHORT).show()})
-            }
+        // 遍历所有球体，并渲染它们
+        balls.forEach { ball ->
+            // 每个球都是一个独立的 Composable
+            FallingBall(
+                ball = ball,
+                onAnimationEnd = { endedBall ->
+                    // 动画结束后，将球从列表中移除
+                    balls.remove(endedBall)
+                }
+            )
         }
     }
 }
 
-@Composable
-fun Screen1() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("页面1 - 字符串1", fontSize = 30.sp)
-    }
-}
+// Ball 类的定义，和上面一样
+data class Ball(
+    val id: String = UUID.randomUUID().toString(),
+    val color: Color,
+    val initialOffset: Offset,
+    val targetY: Float // 目标掉落Y坐标
+)
 
 @Composable
-fun Screen2(navController: NavHostController) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("页面2 - 字符串2", fontSize = 30.sp)
-        Button(onClick = { navController.navigate("screen3") }) {
-            Text("按钮")
-        }
-    }
-}
+fun FallingBall(ball: Ball, onAnimationEnd: (Ball) -> Unit) {
+    // Animatable 用于控制球的Y坐标从 initialOffset.y 动画到 ball.targetY
+    val animatedY = remember { Animatable(ball.initialOffset.y) }
+    val scope = rememberCoroutineScope()
 
-@Composable
-fun Screen3() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    // 当 Composable 进入组合树时，启动掉落动画
+    LaunchedEffect(ball.id) {
+        // 启动动画
+        animatedY.animateTo(
+            targetValue = ball.targetY,
+            animationSpec = tween(durationMillis = 1500) // 1.5秒掉落
+        )
+        // 动画结束后触发回调，通知父组件移除此球
+        onAnimationEnd(ball)
+    }
+
+    // 绘制球体
+    Canvas(
+        modifier = Modifier
+            // 关键：将 Canvas 的位置设置为初始X和动画化的Y
+            .offset(x = ball.initialOffset.x.dp, y = animatedY.value.dp)
     ) {
-        Text("页面3 - 字符串3", fontSize = 30.sp)
+        drawCircle(
+            color = ball.color,
+            radius = 30.dp.toPx() // 球的半径
+        )
     }
 }

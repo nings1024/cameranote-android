@@ -1,7 +1,7 @@
-package com.mnn.cameranote.database.entity.relations
+package com.mnn.cameranote.data.local.entity.relations
 
 import androidx.room.Embedded
-import com.mnn.cameranote.database.entity.MessageEntity
+import com.mnn.cameranote.data.local.entity.MessageEntity
 import com.mnn.cameranote.screens.messagelist.MessageUiModel
 
 data class MessageWithContent(

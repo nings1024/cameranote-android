@@ -4,7 +4,7 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mnn.cameranote.database.repository.MessageRepository
+import com.mnn.cameranote.data.repository.MessageRepository
 import kotlinx.coroutines.flow.*
 
 class MessageViewModel(private val repository: MessageRepository) : ViewModel() {

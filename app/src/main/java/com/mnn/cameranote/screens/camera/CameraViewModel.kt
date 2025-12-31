@@ -13,7 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mnn.cameranote.database.repository.MessageRepository
+import com.mnn.cameranote.data.repository.MessageRepository
 import com.mnn.cameranote.util.createYearMonthDirectory
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

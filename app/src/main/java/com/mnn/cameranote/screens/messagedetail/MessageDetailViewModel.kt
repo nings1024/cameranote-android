@@ -5,25 +5,36 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mnn.cameranote.database.entity.MessageEntity
-import com.mnn.cameranote.database.entity.MessageItemEntity
-import com.mnn.cameranote.database.entity.MessageItemSource
-import com.mnn.cameranote.database.entity.MessageItemType
-import com.mnn.cameranote.database.repository.MessageRepository
-import com.mnn.cameranote.util.createYearMonthDirectory
+import androidx.navigation.toRoute
+import com.mnn.cameranote.data.local.entity.MessageEntity
+import com.mnn.cameranote.data.local.entity.MessageItemEntity
+import com.mnn.cameranote.data.local.entity.MessageItemSource
+import com.mnn.cameranote.data.local.entity.MessageItemType
+import com.mnn.cameranote.data.manager.FileManager
+import com.mnn.cameranote.data.repository.MessageRepository
+import com.mnn.cameranote.navigation.Route
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
 
 class MessageDetailViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: MessageRepository
+    private val repository: MessageRepository,
+    private val fileManager: FileManager
 ) :
     ViewModel() {
+
+    // 状态安全地提取 ID (配合我们之前的类型安全重构)
+    private val route = savedStateHandle.toRoute<Route.Detail>()
+    private val messageId = route.id
+
+    // 增加一个 UI 状态来控制按钮是否可用
+    private val _isSending = MutableStateFlow(false)
+    val isSending = _isSending.asStateFlow()
+
+
     fun sendMessage(inputText: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.insertOneMessage(
@@ -38,44 +49,24 @@ class MessageDetailViewModel(
         }
     }
 
-    // 1. 编写一个辅助函数：将 Uri 转换为你的私有 File
-    fun copyUriToPrivateStorage(context: Context, uri: Uri): File? {
-        val storageDir = context.createYearMonthDirectory()
-        val fileName = "IMG_${System.currentTimeMillis()}_${(100..999).random()}.jpg"
-        val destFile = File(storageDir, fileName)
-
-        return try {
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                destFile.outputStream().use { outputStream ->
-                    inputStream.copyTo(outputStream) // 核心操作：流拷贝
-                }
-            }
-            destFile
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
-
     fun uploadContent(context: Context, inputText: String, selectedImages: List<Uri>) {
+        if (_isSending.value) return // 防止重复点击
         viewModelScope.launch {
+            _isSending.value = true
             // 1. 先处理文本消息
             if (inputText.isNotBlank()) {
                 sendMessage(inputText)
             }
-
-            // 2. 处理图片（在 IO 线程进行）
+            // 2. 并行处理图片 (高级技巧：async + awaitAll)
             if (selectedImages.isNotEmpty()) {
-                withContext(Dispatchers.IO) {
-                    selectedImages.forEach { uri ->
-                        val savedFile = copyUriToPrivateStorage(context, uri)
-                        if (savedFile != null) {
-                            // 插入图片消息（复用你之前的逻辑）
+                selectedImages.map { uri ->
+                    async(Dispatchers.IO) {
+                        val path = fileManager.saveUriToPrivate(uri)
+                        if (path != null) {
                             repository.insertOneMessage(
                                 MessageItemEntity(
                                     messageId = messageId, // 确保这个 ID 是正确生成的逻辑
-                                    content = savedFile.absolutePath, // 存入路径
+                                    content = path, // 存入路径
                                     sequence = 1,
                                     type = MessageItemType.IMAGE,
                                     source = MessageItemSource.UPLOAD
@@ -83,13 +74,12 @@ class MessageDetailViewModel(
                             )
                         }
                     }
-                }
+                }.awaitAll() // 等待所有图片处理完成
             }
+            _isSending.value = false
         }
     }
 
-    // 直接从 savedStateHandle 中获取 "id"
-    private val messageId: Long = checkNotNull(savedStateHandle["id"])
 
     fun updateTitle(title: String, id: Long) {
         viewModelScope.launch {

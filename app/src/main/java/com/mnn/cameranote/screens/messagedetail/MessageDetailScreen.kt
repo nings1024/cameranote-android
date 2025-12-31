@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.mnn.cameranote.database.entity.MessageItemType
+import com.mnn.cameranote.data.local.entity.MessageItemType
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -133,8 +133,11 @@ fun MessageDetailScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(innerPadding), reverseLayout = true // 聊天常用，新消息在底，列表反转
         ) {
-            items(messageItems) { msg ->
-                ChatBubble(msg,imageMessages)
+            items(
+                items = messageItems,
+                key = { it.itemId } // 假设你的消息对象有 id 字段
+            ) { msg ->
+                ChatBubble(msg, imageMessages)
             }
         }
     }

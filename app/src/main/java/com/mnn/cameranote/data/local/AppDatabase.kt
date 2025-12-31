@@ -1,12 +1,12 @@
-package com.mnn.cameranote.database
+package com.mnn.cameranote.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.mnn.cameranote.database.dao.MessageDao
-import com.mnn.cameranote.database.entity.MessageEntity
-import com.mnn.cameranote.database.entity.MessageItemConverters
-import com.mnn.cameranote.database.entity.MessageItemEntity
+import com.mnn.cameranote.data.local.dao.MessageDao
+import com.mnn.cameranote.data.local.entity.MessageEntity
+import com.mnn.cameranote.data.local.entity.MessageItemConverters
+import com.mnn.cameranote.data.local.entity.MessageItemEntity
 
 // data/database/AppDatabase.kt
 @Database(

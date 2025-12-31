@@ -1,10 +1,10 @@
-package com.mnn.cameranote.database.repository
+package com.mnn.cameranote.data.repository
 
-import com.mnn.cameranote.database.dao.MessageDao
-import com.mnn.cameranote.database.entity.MessageEntity
-import com.mnn.cameranote.database.entity.MessageItemEntity
-import com.mnn.cameranote.database.entity.MessageItemType
-import com.mnn.cameranote.database.entity.relations.MessageWithContent
+import com.mnn.cameranote.data.local.dao.MessageDao
+import com.mnn.cameranote.data.local.entity.MessageEntity
+import com.mnn.cameranote.data.local.entity.MessageItemEntity
+import com.mnn.cameranote.data.local.entity.MessageItemType
+import com.mnn.cameranote.data.local.entity.relations.MessageWithContent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn

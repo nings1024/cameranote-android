@@ -1,8 +1,9 @@
 package com.mnn.cameranote.di
 
 import androidx.room.Room
-import com.mnn.cameranote.database.AppDatabase
-import com.mnn.cameranote.database.repository.MessageRepository
+import com.mnn.cameranote.data.local.AppDatabase
+import com.mnn.cameranote.data.manager.FileManager
+import com.mnn.cameranote.data.repository.MessageRepository
 import com.mnn.cameranote.screens.camera.CameraViewModel
 import com.mnn.cameranote.screens.messagedetail.MessageDetailViewModel
 import com.mnn.cameranote.screens.messagelist.MessageViewModel
@@ -23,6 +24,7 @@ val appModule = module {
     }
     single { get<AppDatabase>().messageDao() }
     single { Dispatchers.IO }
+    single { FileManager(androidContext()) }
 
     // 2. Dao 实例
     single { get<AppDatabase>().messageDao() }
@@ -36,7 +38,7 @@ val appModule = module {
 
     viewModel { MessageViewModel(get()) }
 
-    viewModel { MessageDetailViewModel(get(),get()) }
+    viewModel { MessageDetailViewModel(get(),get(),get()) }
 
 }
 

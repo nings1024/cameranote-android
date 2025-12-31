@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.mnn.cameranote.database.entity.MessageItemEntity
+import com.mnn.cameranote.data.local.entity.MessageItemEntity
 import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
 import me.saket.telephoto.zoomable.rememberZoomableState

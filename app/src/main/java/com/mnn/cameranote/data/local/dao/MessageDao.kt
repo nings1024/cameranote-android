@@ -1,4 +1,4 @@
-package com.mnn.cameranote.database.dao
+package com.mnn.cameranote.data.local.dao
 
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -6,11 +6,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import com.mnn.cameranote.database.entity.MessageEntity
-import com.mnn.cameranote.database.entity.MessageItemEntity
-import com.mnn.cameranote.database.entity.MessageItemSource
-import com.mnn.cameranote.database.entity.MessageItemType
-import com.mnn.cameranote.database.entity.relations.MessageWithContent
+import com.mnn.cameranote.data.local.entity.MessageEntity
+import com.mnn.cameranote.data.local.entity.MessageItemEntity
+import com.mnn.cameranote.data.local.entity.MessageItemSource
+import com.mnn.cameranote.data.local.entity.MessageItemType
+import com.mnn.cameranote.data.local.entity.relations.MessageWithContent
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 
