@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mnn.cameranote.data.local.entity.MessageItemEntity
 import com.mnn.cameranote.data.local.entity.MessageItemType
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -39,6 +40,9 @@ fun MessageDetailScreen(
             messageItems.filter { it.type == MessageItemType.IMAGE }.reversed()
         }
     }
+
+    var selectedImageForPager by remember { mutableStateOf<MessageItemEntity?>(null) }
+
 //    待发送消息
     var inputText by remember { mutableStateOf("") }
 //    事件详情
@@ -129,16 +133,23 @@ fun MessageDetailScreen(
             )
         }
     ) { innerPadding ->
-        // 中间消息列表
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(innerPadding), reverseLayout = true // 聊天常用，新消息在底，列表反转
-        ) {
-            items(
-                items = messageItems,
-                key = { it.itemId } // 假设你的消息对象有 id 字段
-            ) { msg ->
-                ChatBubble(msg, imageMessages)
+        LazyColumn {
+            items(messageItems, key = { it.itemId }) { msg ->
+                ChatBubble(
+                    message = msg,
+                    onImageClick = { clickedMsg ->
+                        selectedImageForPager = clickedMsg // 记录当前点击的图片
+                    }
+                )
             }
+        }
+        // 统一由 Screen 弹出全屏预览
+        selectedImageForPager?.let { clickedMessage ->
+            FullScreenImagePager(
+                images = imageMessages, // derivedStateOf 产生的那份
+                initialIndex = imageMessages.indexOf(clickedMessage).coerceAtLeast(0),
+                onDismiss = { selectedImageForPager = null }
+            )
         }
     }
 }
