@@ -133,7 +133,9 @@ fun MessageDetailScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(innerPadding), reverseLayout = true // 聊天常用，新消息在底，列表反转
+        ) {
             items(messageItems, key = { it.itemId }) { msg ->
                 ChatBubble(
                     message = msg,

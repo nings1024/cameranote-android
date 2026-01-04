@@ -30,8 +30,7 @@ fun ChatInputBar(
     onAddImageClick: () -> Unit
 ) {
     Surface(
-        tonalElevation = 8.dp,
-        modifier = Modifier.imePadding()
+        tonalElevation = 8.dp
     ) {
         Column {
             // --- 图片预览区域 ---
