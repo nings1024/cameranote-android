@@ -10,19 +10,18 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.mnn.cameranote.navigation.AppNavHost
-import com.mnn.cameranote.ui.theme.TestTheme
+import com.mnn.cameranote.ui.theme.CameraNoteTheme
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 1. 开启边缘到边缘体验
         enableEdgeToEdge()
 
         setContent {
-            TestTheme {
-                // 2. 使用 Surface 确保背景色和内容颜色正确
+            CameraNoteTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     val navController = rememberNavController()
                     AppNavHost(navController = navController)

@@ -1,4 +1,69 @@
-/.gradle/
-/build/
+# ============================================================
+#  Git 忽略规则
+#
+#  ⚠️ 下面这些是「构建必需」的文件，已经在本仓库里，不要误删或忽略：
+#     gradlew / gradlew.bat / gradle/wrapper/gradle-wrapper.jar
+#     gradle/libs.versions.toml
+#     app/schemas/**          Room 数据库 schema 历史，迁移验证要用
+# ============================================================
+
+# ---------- Gradle ----------
+.gradle/
+build/
+**/build/
+
+# ---------- 本地环境配置（含 SDK 路径，绝对不能提交）----------
 local.properties
-/.idea
+keystore.properties
+signing.properties
+
+# ---------- 签名文件 ----------
+*.jks
+*.keystore
+*.p12
+*.pfx
+
+# ---------- 私有配置 ----------
+google-services.json
+secrets.properties
+
+# ---------- 构建产物 ----------
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+output.json
+app/release/
+
+# ---------- 代码生成 / 缓存 ----------
+.kotlin/
+
+# ---------- 日志与崩溃转储 ----------
+*.log
+*.hprof
+
+# ---------- 原生构建 ----------
+.externalNativeBuild/
+.cxx/
+
+# ---------- IDE ----------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.fleet/
+captures/
+
+# ---------- 操作系统 ----------
+.DS_Store
+._*
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ---------- 合并残留 ----------
+*.orig
+*.rej
+*.bak

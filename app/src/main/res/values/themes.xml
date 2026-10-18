@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      只负责「Compose 起来之前」的窗口外观：
+      NoActionBar（我们完全用 Compose 画界面）+ 与主题一致的窗口底色，
+      避免深色模式下启动时白屏闪烁。系统栏颜色由 enableEdgeToEdge() 在代码里控制。
+    -->
+    <style name="Theme.CameraNote" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background_light</item>
+    </style>
+</resources>

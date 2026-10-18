@@ -6,12 +6,15 @@ plugins {
     alias(libs.plugins.serialization)
 }
 
+// 注意：jvmToolchain 是 Kotlin 扩展，不要写在 android {} 里面（那里只是碰巧能解析到）
+kotlin {
+    jvmToolchain(21)
+}
+
 android {
     namespace = "com.mnn.cameranote"
     compileSdk = 36
-    kotlin {
-        jvmToolchain(21)
-    }
+
     defaultConfig {
         applicationId = "com.mnn.cameranote"
         minSdk = 26
@@ -23,62 +26,79 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+        release {
+            // 开启 R8 与资源压缩：material-icons-extended 这类库没混淆会让包体涨一大截
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
+
     buildFeatures {
         compose = true
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
+
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
 dependencies {
-// --- 1. Compose 核心 (通过 BOM 管理版本) ---
-    val composeBom = platform("androidx.compose:compose-bom:2025.12.01")
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
+    // --- Compose（BOM 统一版本）---
+    implementation(platform(libs.compose.bom))
+    androidTestImplementation(platform(libs.compose.bom))
 
-    // 核心 UI 库
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.compose.core)
+    implementation(libs.compose.graphics)
+    implementation(libs.compose.toolingPreview)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.icons)
     implementation(libs.androidx.activity.compose)
 
-    // --- 2. CameraX (相机功能) ---
+    // --- 相机 ---
     implementation(libs.bundles.camera)
-    // --- 3. 图像加载 (Coil 3.x) ---
+
+    // --- 图片加载 ---
     implementation(libs.coil.compose)
-    implementation("me.saket.telephoto:zoomable-image-coil3:0.18.0")
-    // --- 4. 依赖注入 (Koin 4.x) ---
+    implementation(libs.telephoto.zoomable)
+
+    // --- 依赖注入 ---
     implementation(libs.bundles.koin)
 
-    // --- 5. 数据库 (Room 2.8+) ---
+    // --- 数据库 ---
     implementation(libs.bundles.room)
-    // 注意：Room 编译插件需在 plugins 中配置 KSP 才能工作
     ksp(libs.room.compiler)
-    // --- 6. 导航 (Navigation) ---
+
+    // --- 导航 ---
     implementation(libs.bundles.nav)
 
-    // --- 7. 权限与工具 ---
+    // --- 权限与工具 ---
     implementation(libs.permissions)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
     implementation(libs.concurrent.futures.ktx)
 
-    // --- 8. 测试 ---
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // --- 测试 ---
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.testExt.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+
+    debugImplementation(libs.compose.tooling)
+    debugImplementation(libs.compose.testManifest)
 }

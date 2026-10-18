@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 1,
-    "identityHash": "689465a2c0f120f823a4f7da416d9039",
+    "version": 3,
+    "identityHash": "a73da6105959b573ed59e335791f2db4",
     "entities": [
       {
         "tableName": "messages",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `location` TEXT NOT NULL, `detailInfo` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `deletedTIme` INTEGER NOT NULL, `year` INTEGER NOT NULL, `month` INTEGER NOT NULL, `day` INTEGER NOT NULL, `isTemp` INTEGER NOT NULL, `createTime` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `location` TEXT NOT NULL, `detailInfo` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `deletedTime` INTEGER NOT NULL, `year` INTEGER NOT NULL, `month` INTEGER NOT NULL, `day` INTEGER NOT NULL, `isTemp` INTEGER NOT NULL, `createTime` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -39,8 +39,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "deletedTIme",
-            "columnName": "deletedTIme",
+            "fieldPath": "deletedTime",
+            "columnName": "deletedTime",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -80,11 +80,33 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_messages_isDeleted_createTime",
+            "unique": false,
+            "columnNames": [
+              "isDeleted",
+              "createTime"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_messages_isDeleted_createTime` ON `${TABLE_NAME}` (`isDeleted`, `createTime`)"
+          },
+          {
+            "name": "index_messages_isTemp_createTime",
+            "unique": false,
+            "columnNames": [
+              "isTemp",
+              "createTime"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_messages_isTemp_createTime` ON `${TABLE_NAME}` (`isTemp`, `createTime`)"
+          }
+        ]
       },
       {
         "tableName": "message_items",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`itemId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `messageId` INTEGER NOT NULL, `sequence` INTEGER NOT NULL, `type` INTEGER NOT NULL, `content` TEXT NOT NULL, `source` INTEGER NOT NULL, `isDeleted` INTEGER NOT NULL, `deletedTime` INTEGER NOT NULL, `createTime` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`itemId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `messageId` INTEGER NOT NULL, `sequence` INTEGER NOT NULL, `type` INTEGER NOT NULL, `content` TEXT NOT NULL, `source` INTEGER NOT NULL, `isDeleted` INTEGER NOT NULL, `deletedTime` INTEGER NOT NULL, `createTime` INTEGER NOT NULL, FOREIGN KEY(`messageId`) REFERENCES `messages`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "itemId",
@@ -146,12 +168,57 @@
           "columnNames": [
             "itemId"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_message_items_messageId",
+            "unique": false,
+            "columnNames": [
+              "messageId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_message_items_messageId` ON `${TABLE_NAME}` (`messageId`)"
+          },
+          {
+            "name": "index_message_items_messageId_type_sequence",
+            "unique": false,
+            "columnNames": [
+              "messageId",
+              "type",
+              "sequence"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_message_items_messageId_type_sequence` ON `${TABLE_NAME}` (`messageId`, `type`, `sequence`)"
+          },
+          {
+            "name": "index_message_items_isDeleted_createTime",
+            "unique": false,
+            "columnNames": [
+              "isDeleted",
+              "createTime"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_message_items_isDeleted_createTime` ON `${TABLE_NAME}` (`isDeleted`, `createTime`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "messages",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "messageId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '689465a2c0f120f823a4f7da416d9039')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a73da6105959b573ed59e335791f2db4')"
     ]
   }
 }
